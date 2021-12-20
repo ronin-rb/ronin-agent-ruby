@@ -41,4 +41,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ronin-agent-ruby.  If not, see <https://www.gnu.org/licenses/>.
 
-[Ruby]: https://ruby-lang.org/
+[Ruby]: https://www.ruby-lang.org/
