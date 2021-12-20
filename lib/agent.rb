@@ -7,7 +7,7 @@ require 'json'
 
 Main = self
 
-module RPC
+module Agent
   BLOCK_SIZE = (1024 * 512)
 
   module Fs
@@ -256,7 +256,7 @@ module RPC
   def self.[](name)
     names       = name.split('.')
     method_name = names.pop
-    scope       = RPC
+    scope       = Agent
 
     return if method_name.nil?
 
@@ -325,7 +325,7 @@ module RPC
 
         name, arguments = decode_request(request.query['_request'])
 
-        encode_response(response,RPC.call(name,arguments))
+        encode_response(response,Agent.call(name,arguments))
       end
 
       protected
@@ -356,7 +356,7 @@ module RPC
         loop do
           name, arguments = decode_request(socket.readline("\0"))
 
-          encode_response(socket,RPC.call(name,arguments))
+          encode_response(socket,Agent.call(name,arguments))
         end
       end
     end
@@ -421,11 +421,11 @@ if $0 == __FILE__
 
   case ARGV[0]
   when '--http'
-    RPC::HTTP::Server.start ARGV[1], ARGV[2]
+    Agent::HTTP::Server.start ARGV[1], ARGV[2]
   when '--listen'
-    RPC::TCP::Server.start ARGV[1], ARGV[2]
+    Agent::TCP::Server.start ARGV[1], ARGV[2]
   when '--connect'
-    RPC::TCP::ConnectBack.start ARGV[1], ARGV[2]
+    Agent::TCP::ConnectBack.start ARGV[1], ARGV[2]
   else
     usage
   end
