@@ -17,6 +17,7 @@ ronin agents are programs that can be deployed to systems for defensive purposes
 * Supports TCP server, TCP connect back, and a HTTP server.
 * Allows opening/reading/writing files, controlling processes, executing
   commands, opening TCP/UDP sockets, querying DNS, etc.
+* Only uses code in Ruby stdlib.
 
 ## Synopsis
 
