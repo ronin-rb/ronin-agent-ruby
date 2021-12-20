@@ -26,7 +26,7 @@ ronin agents are programs that can be deployed to systems for defensive purposes
 
 ronin-agent-ruby - A ronin agent written in Ruby.
 
-Copyright (c) 2007-2013 Hal Brodigan (postmodern.mod3 at gmail.com)
+Copyright (c) 2007-2021 Hal Brodigan (postmodern.mod3 at gmail.com)
 
 ronin-agent-ruby is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
