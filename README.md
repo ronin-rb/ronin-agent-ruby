@@ -11,6 +11,13 @@ ronin-agent-ruby is a ronin agent written in [Ruby].
 ronin agents are programs that can be deployed to systems for defensive purposes
 (ex: telemetry) or offensive purposes (ex: post-exploitation).
 
+## Features
+
+* Uses a JSON RPC protocol
+* Supports TCP server, TCP connect back, and a HTTP server.
+* Allows opening/reading/writing files, controlling processes, executing
+  commands, opening TCP/UDP sockets, querying DNS, etc.
+
 ## Development
 
 1. [Fork It!](https://github.com/ronin-rb/ronin-agent-ruby/fork)
