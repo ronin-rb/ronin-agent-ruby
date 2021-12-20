@@ -18,6 +18,13 @@ ronin agents are programs that can be deployed to systems for defensive purposes
 * Allows opening/reading/writing files, controlling processes, executing
   commands, opening TCP/UDP sockets, querying DNS, etc.
 
+## Synopsis
+
+```shell
+ruby agent.rb --help
+usage: agent.rb [--http PORT [HOST]] [--listen PORT [HOST]] [--connect HOST PORT]
+```
+
 ## Development
 
 1. [Fork It!](https://github.com/ronin-rb/ronin-agent-ruby/fork)
