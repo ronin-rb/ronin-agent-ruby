@@ -8,285 +8,287 @@ require 'json'
 Main = self
 
 module Agent
-  BLOCK_SIZE = (1024 * 512)
+  module RPC
+    BLOCK_SIZE = (1024 * 512)
 
-  module Fs
-    extend FileUtils
+    module Fs
+      extend FileUtils
 
-    def self.open(path,mode); File.new(path,mode).fileno; end
+      def self.open(path,mode); File.new(path,mode).fileno; end
 
-    def self.read(fd,position)
-      file = File.for_fd(fd)
-      file.seek(position)
+      def self.read(fd,position)
+        file = File.for_fd(fd)
+        file.seek(position)
 
-      return (file.read(BLOCK_SIZE) || '')
-    end
-
-    def self.write(fd,position,data)
-      file = File.for_fd(fd)
-      file.seek(position)
-
-      return file.write(data)
-    end
-
-    def self.seek(fd,position)
-      file = File.for_fd(fd)
-      file.seek(position)
-
-      return file.pos
-    end
-
-    def self.close(fd); file = File.for_fd(fd).close; end
-
-    def self.getcwd;                   Dir.pwd;                            end
-    def self.readlink(path);           File.readlink(path);                end
-    def self.readdir(path);            Dir.entries(path);                  end
-    def self.glob(pattern);            Dir.glob(pattern);                  end
-    def self.mktemp(basename);         Tempfile.new(basename).path;        end
-    def self.unlink(path);             File.unlink(path);                  end
-    def self.chown(user,path);         FileUtils.chown(user,nil,path);     end
-    def self.chgrp(group,path);        FileUtils.chown(nil,group,path);    end
-    def self.stat(path);               File.stat(path);                    end
-    def self.compare(path,other_path); File.compare_file(path,other_path); end
-  end
-
-  module Process
-    def self.getpid;             ::Process.pid;         end
-    def self.getppid;            ::Process.ppid;        end
-    def self.getuid;             ::Process.uid;         end
-    def self.setuid(uid);        ::Process.uid = uid;   end
-    def self.geteuid;            ::Process.euid;        end
-    def self.seteuid(euid);      ::Process.euid = euid; end
-    def self.getgid;             ::Process.gid;         end
-    def self.setgid(gid);        ::Process.gid = gid;   end
-    def self.getegid;            ::Process.egid;        end
-    def self.setegid(gid);       ::Process.egid = egid; end
-    def self.getsid;             ::Process.sid;         end
-    def self.setsid(sid);        ::Process.sid = sid;   end
-    def self.getenv(name);       ENV[name];             end
-    def self.setenv(name,value); ENV[name] = value;     end
-    def self.unsetenv(name);     ENV.delete(name);      end
-
-    def self.kill(pid,signal='KILL'); ::Process.kill(pid,signal); end
-    def self.getcwd;                  Dir.pwd;                    end
-    def self.chdir(path);             Dir.chdir(path);            end
-    def self.time;                    Time.now.to_i;              end
-    def self.spawn(program,*arguments)
-      fork { exec(program,*arguments) }
-    end
-    def self.exit; exit; end
-  end
-
-  module Shell
-    def self.shell; @shell ||= IO.popen(ENV['SHELL']); end
-
-    def self.exec(program,*arguments)
-      io = IO.popen("#{program} #{arguments.join(' ')}")
-
-      self.processes[io.pid] = io
-      return io.pid
-    end
-
-    def self.read(pid)
-      process = self.process(pid)
-
-      begin
-        return process.read_nonblock(BLOCK_SIZE)
-      rescue IO::WaitReadable
-        return nil # no data currently available
-      end
-    end
-
-    def self.write(pid,data)
-      self.process(pid).write(data)
-    end
-
-    def self.close(pid)
-      process = self.process(pid)
-      process.close
-
-      self.processes.delete(pid)
-      return true
-    end
-  end
-
-  module Net
-    def self.sockets; @sockets ||= {}; end
-    def self.socket(fd)
-      unless (socket = sockets[fd])
-        raise(RuntimeError,"unknown socket file-descriptor",caller)
+        return (file.read(BLOCK_SIZE) || '')
       end
 
-      return socket
+      def self.write(fd,position,data)
+        file = File.for_fd(fd)
+        file.seek(position)
+
+        return file.write(data)
+      end
+
+      def self.seek(fd,position)
+        file = File.for_fd(fd)
+        file.seek(position)
+
+        return file.pos
+      end
+
+      def self.close(fd); file = File.for_fd(fd).close; end
+
+      def self.getcwd;                   Dir.pwd;                            end
+      def self.readlink(path);           File.readlink(path);                end
+      def self.readdir(path);            Dir.entries(path);                  end
+      def self.glob(pattern);            Dir.glob(pattern);                  end
+      def self.mktemp(basename);         Tempfile.new(basename).path;        end
+      def self.unlink(path);             File.unlink(path);                  end
+      def self.chown(user,path);         FileUtils.chown(user,nil,path);     end
+      def self.chgrp(group,path);        FileUtils.chown(nil,group,path);    end
+      def self.stat(path);               File.stat(path);                    end
+      def self.compare(path,other_path); File.compare_file(path,other_path); end
     end
 
-    module Dns
-      def self.lookup(host)
-        Resolv.getaddresses(host)
-      end
+    module Process
+      def self.getpid;             ::Process.pid;         end
+      def self.getppid;            ::Process.ppid;        end
+      def self.getuid;             ::Process.uid;         end
+      def self.setuid(uid);        ::Process.uid = uid;   end
+      def self.geteuid;            ::Process.euid;        end
+      def self.seteuid(euid);      ::Process.euid = euid; end
+      def self.getgid;             ::Process.gid;         end
+      def self.setgid(gid);        ::Process.gid = gid;   end
+      def self.getegid;            ::Process.egid;        end
+      def self.setegid(gid);       ::Process.egid = egid; end
+      def self.getsid;             ::Process.sid;         end
+      def self.setsid(sid);        ::Process.sid = sid;   end
+      def self.getenv(name);       ENV[name];             end
+      def self.setenv(name,value); ENV[name] = value;     end
+      def self.unsetenv(name);     ENV.delete(name);      end
 
-      def self.reverse_lookup(ip)
-        Resolv.getnames(host)
+      def self.kill(pid,signal='KILL'); ::Process.kill(pid,signal); end
+      def self.getcwd;                  Dir.pwd;                    end
+      def self.chdir(path);             Dir.chdir(path);            end
+      def self.time;                    Time.now.to_i;              end
+      def self.spawn(program,*arguments)
+        fork { exec(program,*arguments) }
       end
+      def self.exit; exit; end
     end
 
-    module Tcp
-      def self.connect(host,port,local_host=nil,local_port=nil)
-        socket = TCPSocket.new(host,port,local_host,local_port)
+    module Shell
+      def self.shell; @shell ||= IO.popen(ENV['SHELL']); end
 
-        Net.sockets[socket.fileno] = socket
-        return socket.fileno
+      def self.exec(program,*arguments)
+        io = IO.popen("#{program} #{arguments.join(' ')}")
+
+        self.processes[io.pid] = io
+        return io.pid
       end
 
-      def self.listen(port,host=nil)
-        socket = TCPServer.new(port,host)
-        socket.listen(256)
-
-        Net.sockets[socket.fileno] = socket
-        return socket.fileno
-      end
-
-      def self.accept(fd)
-        socket = Net.socket(fd)
+      def self.read(pid)
+        process = self.process(pid)
 
         begin
-          client = socket.accept_nonblock
-        rescue IO::WaitReadable, Errno::EINTR
-          return nil
-        end
-
-        Net.sockets[client.fileno] = client
-        return client.fileno
-      end
-
-      def self.recv(fd)
-        socket = Net.socket(fd)
-
-        begin
-          return socket.recv_nonblock(BLOCK_SIZE)
+          return process.read_nonblock(BLOCK_SIZE)
         rescue IO::WaitReadable
-          return nil
+          return nil # no data currently available
         end
       end
 
-      def self.send(fd,data)
-        Net.socket(fd).send(data)
+      def self.write(pid,data)
+        self.process(pid).write(data)
+      end
+
+      def self.close(pid)
+        process = self.process(pid)
+        process.close
+
+        self.processes.delete(pid)
+        return true
       end
     end
 
-    module Udp
-      def self.connect(host,port,local_host=nil,local_port=nil)
-        socket = UDPSocket.new(host,port,local_host,local_port)
+    module Net
+      def self.sockets; @sockets ||= {}; end
+      def self.socket(fd)
+        unless (socket = sockets[fd])
+          raise(RuntimeError,"unknown socket file-descriptor",caller)
+        end
 
-        Net.sockets[socket.fileno] = socket
-        return socket.fileno
+        return socket
       end
 
-      def self.listen(port,host=nil)
-        socket = UDPServer.new(port,host)
+      module Dns
+        def self.lookup(host)
+          Resolv.getaddresses(host)
+        end
 
-        Net.sockets[socket.fileno] = socket
-        return socket.fileno
-      end
-
-      def self.recv(fd)
-        socket = Net.socket(fd)
-
-        begin
-          return socket.recvfrom_nonblock(BLOCK_SIZE)
-        rescue IO::WaitReadable
-          return nil
+        def self.reverse_lookup(ip)
+          Resolv.getnames(host)
         end
       end
 
-      def self.send(fd,data,host=nil,port=nil)
-        socket = Net.socket(fd)
+      module Tcp
+        def self.connect(host,port,local_host=nil,local_port=nil)
+          socket = TCPSocket.new(host,port,local_host,local_port)
 
-        if (host && port)
-          return socket.send(data,0,host,port)
-        else
-          return socket.send(data)
+          Net.sockets[socket.fileno] = socket
+          return socket.fileno
         end
+
+        def self.listen(port,host=nil)
+          socket = TCPServer.new(port,host)
+          socket.listen(256)
+
+          Net.sockets[socket.fileno] = socket
+          return socket.fileno
+        end
+
+        def self.accept(fd)
+          socket = Net.socket(fd)
+
+          begin
+            client = socket.accept_nonblock
+          rescue IO::WaitReadable, Errno::EINTR
+            return nil
+          end
+
+          Net.sockets[client.fileno] = client
+          return client.fileno
+        end
+
+        def self.recv(fd)
+          socket = Net.socket(fd)
+
+          begin
+            return socket.recv_nonblock(BLOCK_SIZE)
+          rescue IO::WaitReadable
+            return nil
+          end
+        end
+
+        def self.send(fd,data)
+          Net.socket(fd).send(data)
+        end
+      end
+
+      module Udp
+        def self.connect(host,port,local_host=nil,local_port=nil)
+          socket = UDPSocket.new(host,port,local_host,local_port)
+
+          Net.sockets[socket.fileno] = socket
+          return socket.fileno
+        end
+
+        def self.listen(port,host=nil)
+          socket = UDPServer.new(port,host)
+
+          Net.sockets[socket.fileno] = socket
+          return socket.fileno
+        end
+
+        def self.recv(fd)
+          socket = Net.socket(fd)
+
+          begin
+            return socket.recvfrom_nonblock(BLOCK_SIZE)
+          rescue IO::WaitReadable
+            return nil
+          end
+        end
+
+        def self.send(fd,data,host=nil,port=nil)
+          socket = Net.socket(fd)
+
+          if (host && port)
+            return socket.send(data,0,host,port)
+          else
+            return socket.send(data)
+          end
+        end
+      end
+
+      def self.remote_address(fd)
+        socket   = self.socket(fd)
+        addrinfo = socket.remote_address
+
+        return [addrinfo.ip_address, addrinfo.ip_port]
+      end
+
+      def self.local_address(fd)
+        socket   = self.socket(fd)
+        addrinfo = socket.local_address
+
+        return [addrinfo.ip_address, addrinfo.ip_port]
+      end
+
+      def self.close(fd)
+        socket = self.socket(fd)
+        socket.close
+
+        self.sockets.delete(fd)
+        return true
       end
     end
 
-    def self.remote_address(fd)
-      socket   = self.socket(fd)
-      addrinfo = socket.remote_address
-
-      return [addrinfo.ip_address, addrinfo.ip_port]
-    end
-
-    def self.local_address(fd)
-      socket   = self.socket(fd)
-      addrinfo = socket.local_address
-
-      return [addrinfo.ip_address, addrinfo.ip_port]
-    end
-
-    def self.close(fd)
-      socket = self.socket(fd)
-      socket.close
-
-      self.sockets.delete(fd)
-      return true
-    end
-  end
-
-  module Ruby
-    def self.eval(code); Main.eval(code); end
-    def self.define(name,args,code)
-      module_eval %{
+    module Ruby
+      def self.eval(code); Main.eval(code); end
+      def self.define(name,args,code)
+        module_eval %{
         def self.#{name}(#{args.join(',')})
           #{code}
         end
-      }
-      return true
-    end
+        }
+        return true
+      end
 
-    def self.version;  RUBY_VERSION;  end
-    def self.platform; RUBY_PLATFORM; end
-    def self.engine
-      if Object.const_defined?('RUBY_ENGINE')
-        Object.const_get('RUBY_ENGINE')
+      def self.version;  RUBY_VERSION;  end
+      def self.platform; RUBY_PLATFORM; end
+      def self.engine
+        if Object.const_defined?('RUBY_ENGINE')
+          Object.const_get('RUBY_ENGINE')
+        end
       end
     end
-  end
 
-  def self.[](name)
-    names       = name.split('.')
-    method_name = names.pop
-    scope       = Agent
+    def self.[](name)
+      names       = name.split('.')
+      method_name = names.pop
+      scope       = RPC
 
-    return if method_name.nil?
+      return if method_name.nil?
 
-    names.each do |name|
-      scope = begin
-                scope.const_get(name.capitalize)
-              rescue NameError
+      names.each do |name|
+        scope = begin
+                  scope.const_get(name.capitalize)
+                rescue NameError
+                end
+
+        return if scope.nil?
+      end
+
+      begin
+        scope.method(method_name)
+      rescue NameError
+      end
+    end
+
+    def self.call(name,arguments)
+      unless (method = self[name])
+        return {'exception' => "Unknown method: #{name}"}
+      end
+
+      value = begin
+                method.call(*arguments)
+              rescue => exception
+                return {'exception' => exception.message}
               end
 
-      return if scope.nil?
+      return {'return' => value}
     end
-
-    begin
-      scope.method(method_name)
-    rescue NameError
-    end
-  end
-
-  def self.call(name,arguments)
-    unless (method = self[name])
-      return {'exception' => "Unknown method: #{name}"}
-    end
-
-    value = begin
-              method.call(*arguments)
-            rescue => exception
-              return {'exception' => exception.message}
-            end
-
-    return {'return' => value}
   end
 
   module Transport
@@ -325,7 +327,7 @@ module Agent
 
         name, arguments = decode_request(request.query['_request'])
 
-        encode_response(response,Agent.call(name,arguments))
+        encode_response(response,RPC.call(name,arguments))
       end
 
       protected
@@ -356,7 +358,7 @@ module Agent
         loop do
           name, arguments = decode_request(socket.readline("\0"))
 
-          encode_response(socket,Agent.call(name,arguments))
+          encode_response(socket,RPC.call(name,arguments))
         end
       end
     end
