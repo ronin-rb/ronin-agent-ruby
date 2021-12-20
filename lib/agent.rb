@@ -415,7 +415,7 @@ end
 
 if $0 == __FILE__
   def usage
-    puts "usage: #{$0} [--http PORT [HOST]] [--listen PORT [HOST]] [--connect HOST PORT]"
+    puts "usage: #{$0} {--http PORT [HOST] | --listen PORT [HOST] | --connect HOST PORT}"
     exit -1
   end
 
