@@ -9,8 +9,6 @@ Main = self
 
 module Agent
   module RPC
-    BLOCK_SIZE = (1024 * 512)
-
     module Fs
       extend FileUtils
 
@@ -291,7 +289,7 @@ module Agent
     end
   end
 
-  module Transport
+  module Message
     protected
 
     def serialize(data);   Base64.encode64(data.to_json);     end
@@ -311,7 +309,7 @@ module Agent
 
     class Server < WEBrick::HTTPServlet::AbstractServlet
 
-      include Transport
+      include Message
 
       def self.start(port,host=nil)
         server = WEBrick::HTTPServer.new(:Host => host, :Port => port)
@@ -342,7 +340,7 @@ module Agent
 
   module TCP
     module Protocol
-      include Transport
+      include Message
 
       protected
 
