@@ -22,6 +22,10 @@ ronin agents are programs that can be deployed to systems for defensive purposes
 ## Synopsis
 
 ```shell
+$ ./build.sh
+```
+
+```shell
 $ ruby agent.rb --help
 usage: ruby agent.rb {--http PORT [HOST] | --listen PORT [HOST] | --connect HOST PORT}
 ```
