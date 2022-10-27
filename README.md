@@ -26,8 +26,8 @@ $ ./build.sh
 ```
 
 ```shell
-$ ruby agent.rb --help
-usage: ruby agent.rb {--http PORT [HOST] | --listen PORT [HOST] | --connect HOST PORT}
+$ ./agent.rb --help
+usage: ./agent.rb {--http PORT [HOST] | --listen PORT [HOST] | --connect HOST PORT}
 ```
 
 ## Development
