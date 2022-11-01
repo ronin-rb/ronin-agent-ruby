@@ -5,7 +5,7 @@ if $0 == __FILE__
   end
 
   case ARGV[0]
-  when '--http'    then Agent::HTTP::Server.start(ARGV[1],ARGV[2])
+  when '--http'    then Agent::HTTP::Client.start(ARGV[1],ARGV[2])
   when '--connect' then Agent::TCP::ConnectBack.start(ARGV[1],ARGV[2])
   else
     usage
