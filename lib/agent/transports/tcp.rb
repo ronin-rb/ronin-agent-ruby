@@ -1,8 +1,8 @@
 require 'socket'
 
 module Agent
-  module TCP
-    class ConnectBack
+  module Transports
+    class HTTP
 
       include Message
 

@@ -1,8 +1,8 @@
 require 'net/http'
 
 module Agent
-  module HTTP
-    class Client
+  module Transports
+    class HTTP
 
       include Message
 
