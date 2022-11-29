@@ -2,8 +2,7 @@
 
 * [Source](https://github.com/ronin-rb/ronin-agent-ruby)
 * [Issues](https://github.com/ronin-rb/ronin-agent-ruby/issues)
-* [Slack](https://ronin-rb.slack.com) |
-  [Discord](https://discord.gg/6WAb3PsVX9) |
+* [Discord](https://discord.gg/6WAb3PsVX9) |
   [Twitter](https://twitter.com/ronin_rb)
 
 ronin-agent-ruby is a ronin agent written in [Ruby].
