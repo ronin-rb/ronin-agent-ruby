@@ -3,7 +3,8 @@
 * [Source](https://github.com/ronin-rb/ronin-agent-ruby)
 * [Issues](https://github.com/ronin-rb/ronin-agent-ruby/issues)
 * [Discord](https://discord.gg/6WAb3PsVX9) |
-  [Twitter](https://twitter.com/ronin_rb)
+  [Twitter](https://twitter.com/ronin_rb) |
+  [Mastodon](https://infosec.exchange/@ronin_rb)
 
 ronin-agent-ruby is a ronin agent written in [Ruby].
 
